@@ -1,0 +1,73 @@
+#newnotebtn{
+    margin-top:10px;
+    margin-left:10px;
+    font-size:50px;
+    padding-top:0px;
+    padding-bottom:0px;
+    height:80px;
+    width:80px;
+} 
+
+.noteprev{
+    padding-top:50px;
+}
+
+.viewbtn{
+    margin-right:10px;
+    opacity:0.3;
+    transition-duration:0.3s;
+}
+
+.editbtn{
+    opacity:0.3;
+    transition-duration:0.3s;
+}
+
+.deletebtn{
+    margin-left:10px;
+    opacity:0.3;
+    transition-duration:0.3s;
+}
+
+
+
+.viewbtn #viewsvg{
+    fill:#28a745;
+}
+
+.viewbtn:hover #viewsvg{
+    fill:white;
+}
+
+.editbtn #editsvg{
+    fill:#ffc107;
+}
+
+.editbtn:hover #editsvg{
+    fill:white;
+}
+
+.deletebtn #deletesvg{
+    fill:#dc3545;
+}
+
+.deletebtn:hover #deletesvg{
+    fill:white;
+}
+
+#notepreviewcontainer{
+    cursor: pointer;
+    z-index:-1;
+}
+
+#notepreviewcontainer:hover .viewbtn{
+    opacity:1;
+}
+
+#notepreviewcontainer:hover .editbtn{
+    opacity:1;
+}
+
+#notepreviewcontainer:hover .deletebtn{
+    opacity:1;
+}
