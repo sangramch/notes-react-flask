@@ -1,6 +1,6 @@
 import psycopg2 as ps
 
-
+#CRUD OPERATIONS ON NOTES TABLE
 def getnotes(userid):
     try:
         connection=ps.connect(user="sangram", host="localhost", port=5432, database="notesapp")
@@ -10,12 +10,15 @@ def getnotes(userid):
         cursor.execute(query)
         noteslist=cursor.fetchall()
 
-        return noteslist
-    except:
-        return "error"
-    finally:
         cursor.close()
         connection.close()
+
+        return noteslist
+    except Exception as e:
+        cursor.close()
+        connection.close()
+        print(e)
+        return "error"
 
 def addnote(userid,title,note):
     try:
@@ -27,8 +30,11 @@ def addnote(userid,title,note):
 
         cursor.execute(query)
         connection.commit()
-    except:
-        return error
+    except Exception as e:
+        cursor.close()
+        connection.close()
+        print(e)
+        return "error"
     finally:
         cursor.close()
         connection.close()
@@ -45,7 +51,10 @@ def updatenote(userid,noteid,title,note):
         cursor.execute(query)
         connection.commit()
     
-    except:
+    except Exception as e:
+        cursor.close()
+        connection.close()
+        print(e)
         return "error"
 
     finally:
@@ -62,9 +71,64 @@ def deletenote(userid,noteid):
 
         cursor.execute(query)
         connection.commit()
-    except:
+    except Exception as e:
+        cursor.close()
+        connection.close()
+        print(e)
         return "error"
 
     finally:
         cursor.close()
         connection.close()
+
+
+
+#USER MANAGEMENT SECTION
+def get_user(username):
+    try:
+        connection=ps.connect(user="sangram", host="localhost", port=5432, database="notesapp")
+        cursor=connection.cursor()
+
+        query="""SELECT id,pass from users
+        WHERE email='{}';""".format(username,password)
+
+        cursor.execute(query)
+        user=cursor.fetchone()
+
+        cursor.close()
+        connection.close()
+
+        if user is not None:
+            return user
+        return "autherror"
+
+    except Exception as e:
+        print(e)
+        cursor.close()
+        connection.close()
+
+        return "error"
+
+def register_user(firstname,lastname,username,password):
+    try:
+        connection=ps.connect(user="sangram", host="localhost", port=5432, database="notesapp")
+        cursor=connection.cursor()
+
+        query="""INSERT INTO users(firstname,lastname,email,pass)
+        VALUES('{}','{}','{}','{}');""".format(firstname,lastname,username,password)
+
+        cursor.execute(query)
+        connection.commit()
+
+        cursor.close()
+        connection.close()
+    
+    except Exception as e:
+        cursor.close()
+        connection.close()
+        if e.pgcode=='23505':
+            return("emailerror")
+        elif e.pgcode=='23502':
+            return("nullviolation")
+        print(e)
+        return ("error")

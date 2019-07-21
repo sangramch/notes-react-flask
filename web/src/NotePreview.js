@@ -1,8 +1,9 @@
 import React from "react"
-import {Button} from 'react-bootstrap'
+import {Modal,Button} from 'react-bootstrap'
 import NoteContainer from "./NoteContainer.js"
 import NoteEdit from "./NoteEdit.js"
-import Logo from './icons/view.png'
+import DeleteConfirmation from './DeleteConfirmation'
+import auth from "./auth.js";
 
 
 let svgicons={
@@ -37,30 +38,70 @@ export default class NotePreview extends React.Component{
     constructor(){
         super()
         this.state={
+            failedtodelete:false,
             viewmodal:false,
-            editmodal:false
+            editmodal:false,
+            deletemodal:false
         }
-        this.handleClick=this.handleClick.bind(this)
+        this.handleDelete=this.handleDelete.bind(this)
+        this.hideError=this.hideError.bind(this)
+
         this.viewViewModal=this.viewViewModal.bind(this)
         this.hideViewModal=this.hideViewModal.bind(this)
+
         this.viewEditModal=this.viewEditModal.bind(this)
         this.hideEditModal=this.hideEditModal.bind(this)
+
+        this.viewDeleteModal=this.viewDeleteModal.bind(this)
+        this.hideDeleteModal=this.hideDeleteModal.bind(this)
     }
 
-    handleClick(){
+
+
+    handleDelete(event){
+        event.preventDefault()
         fetch("http://localhost:5000/api/deletenote",
             {
                 method: "POST",
                 headers:{
+                    'Authorization':localStorage.getItem("token"),
                     "Content-type":"application/json"
                 },
                 body:JSON.stringify({
-                    "id":this.props.id
+                    id:this.props.id
                 })
             }
         )
-        this.props.onDelete(this.props.id)
+        .then(res=>{
+            if(res.status>=200 && res.status<=300){
+                this.props.onDelete(this.props.id)
+            }
+            else if(res.status===401){
+                auth.logout()
+            }
+            else{
+                this.hideDeleteModal()
+                this.setState({
+                    failedtodelete:true
+                })
+            }
+        })
+        .catch(err=>{
+            this.hideDeleteModal()
+            this.setState({
+                failedtodelete:true
+            })
+        })
+        
     }
+
+    hideError(){
+        this.setState({
+            failedtodelete:false
+        })
+    }
+
+
 
     viewViewModal(){
         this.setState({
@@ -71,9 +112,17 @@ export default class NotePreview extends React.Component{
     viewEditModal(){
         this.setState({
             editmodal:true,
-            viewmodal:false
         })
     }
+
+    viewDeleteModal(){
+        this.hideViewModal()
+        this.setState({
+            deletemodal:true,
+        })
+    }
+
+
 
     hideViewModal(){
         this.setState({
@@ -85,12 +134,19 @@ export default class NotePreview extends React.Component{
         this.setState({
             editmodal:false
         })
-        this.hideViewModal()
     }
+
+    hideDeleteModal(){
+        this.setState({
+            deletemodal:false
+        })
+    }
+
+
 
     render(){
 
-        let title_preview_len=10
+        let title_preview_len=8
         let note_preview_len=15
 
         let ttdot=""
@@ -104,29 +160,37 @@ export default class NotePreview extends React.Component{
         }
         return (
         <div>
-            <div id="notepreviewcontainer" onClick={this.viewViewModal}>
-                <p style={{"font-size":"15px","float":"right"}}>{this.props.id}</p>
-                <h3 style={{"font-family":"monospace"}}>{this.props.title.slice(0,title_preview_len)+ttdot}</h3>
-                <p style={{"font-family":"monospace"}}>{this.props.note.slice(0,note_preview_len)+ntdot}</p>
-                <Button variant="outline-success" className="viewbtn" onClick={this.viewViewModal} style={{"padding-top":0,"padding-bottom":"5px"}}>
-                    <svg height="32px" width="32px" viewBox="0 0 488.85 488.85" id="viewsvg">
+            <div id="notepreviewcontainer">
+                <div onClick={this.viewViewModal}>
+                    <h3 style={{"fontFamily":"monospace"}}>{this.props.title.slice(0,title_preview_len)+ttdot}</h3>
+                    <p style={{"fontFamily":"monospace"}}>{this.props.note.slice(0,note_preview_len)+ntdot}</p>
+                </div>
+            
+                <Button variant="outline-success" className="viewbtn" onClick={this.viewViewModal} style={{"paddingTop":0,"paddingBottom":"5px"}}>
+                    <svg height="20px" width="20px" viewBox="0 0 488.85 488.85" id="viewsvg">
                         <path d={svgicons.view}/>
                     </svg>
                 </Button>
-                <Button variant="outline-warning" className="editbtn" onClick={this.viewEditModal} style={{"padding-top":0,"padding-bottom":"5px","z-index":1}}>
-                    <svg height="32px" width="32px" viewBox="0 0 300 300" id="editsvg">
+                <Button variant="outline-warning" className="editbtn" onClick={this.viewEditModal} style={{"paddingTop":0,"paddingBottom":"5px","zIndex":1}}>
+                    <svg height="20px" width="20px" viewBox="0 0 300 300" id="editsvg">
                         <path d={svgicons.edit}/>
                     </svg>
                 </Button>
-                <Button variant="outline-danger" className="deletebtn" onClick={this.handleClick} style={{"padding-top":0,"padding-bottom":"5px"}}>
-                    <svg height="32px" width="32px" viewBox="0 0 408.483 408.483" id="deletesvg">
+                <Button variant="outline-danger" className="deletebtn" onClick={this.viewDeleteModal} style={{"paddingTop":0,"paddingBottom":"5px"}}>
+                    <svg height="20px" width="20px" viewBox="0 0 408.483 408.483" id="deletesvg">
                         <path d={svgicons.delete.comp1}/>
                         <path d={svgicons.delete.comp2}/>
                     </svg>
                 </Button>
             </div>
-            <NoteContainer show={this.state.viewmodal} onHide={this.hideViewModal} id={this.props.id} title={this.props.title} note={this.props.note}></NoteContainer>
-            <NoteEdit show={this.state.editmodal} onHide={this.hideEditModal} id={this.props.id} title={this.props.title} note={this.props.note}></NoteEdit>
+            <NoteContainer logoutCallback={this.props.logoutCallback} show={this.state.viewmodal} onHide={this.hideViewModal} id={this.props.id} title={this.props.title} note={this.props.note} onDeleteClick={this.viewDeleteModal}></NoteContainer>
+            <NoteEdit logoutCallback={this.props.logoutCallback} show={this.state.editmodal} onHide={this.hideEditModal} id={this.props.id} title={this.props.title} note={this.props.note}></NoteEdit>
+            <DeleteConfirmation show={this.state.deletemodal} onHide={this.hideDeleteModal} confirmDelete={this.handleDelete} id={this.props.id}></DeleteConfirmation>
+            <Modal show={this.state.failedtodelete} onHide={this.hideError}>
+                <Modal.Body>
+                    Failed to Delete Note. Please Check your Connection and Try Again.
+                </Modal.Body>
+            </Modal>
         </div>)
     }
 }
