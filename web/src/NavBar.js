@@ -27,25 +27,28 @@ let svgicons={
 export default class NavBar extends React.Component{
     render(){
         let icon=(
-            <svg height="32px" width="32px" viewBox="0 0 268.765 268.765">
-                <path style="fill-rule:evenodd;clip-rule:evenodd;" d={svgicons.gear} style={{"fill":"white"}}/>
+            <svg height="32px" width="32px" viewBox="0 0 268.765 268.765" id="gearsvgicon">
+                <path style={{"fill-rule":"evenodd","clip-rule":"evenodd"}} d={svgicons.gear}/>
             </svg>
         )
         if(this.props.loggedin===true){
 
             return (
                 <Navbar bg="dark" variant="dark">
+                    
                     <Container>
                         <Navbar.Brand style={{"cursor":"pointer"}} onClick={this.props.homeCallback}>SimpleNotes</Navbar.Brand>
+                        <Form  inline><Button variant="outline-info" onClick={this.props.onNewnote}>+</Button></Form>
                         <Nav>
-                            <Form style={{"paddingRight":"20px"}} inline><Button variant="outline-info" onClick={this.props.onNewnote}>+</Button></Form>
+                            <Navbar.Text style={{"paddingRight":"20px"}}>Bonjour <span style={{"color":"#dadada"}}> {this.props.userName}</span></Navbar.Text>
                             <NavDropdown title={icon}>
-                                <NavDropdown.Item><Button variant="outline-danger" style={{"width":"100%"}} onClick={()=>auth.logout(this.props.onLogout)}>Logout</Button></NavDropdown.Item>
+                                <Container><Button variant="outline-danger" style={{"width":"100%"}} onClick={()=>auth.logout(this.props.onLogout)}>Logout</Button></Container>
                                 <NavDropdown.Divider/>
                                 <NavDropdown.Item onClick={this.props.aboutCallback}>About</NavDropdown.Item>
                             </NavDropdown>
                         </Nav>
-                    </Container>    
+                    </Container>   
+                     
                 </Navbar>
             )
         }

@@ -16,7 +16,8 @@ export default class App extends React.Component{
             loggedin:false,
             loginerror:false,
             aboutpage:false,
-            errorname:""
+            errorname:"",
+            username:""
         }
         this.openModal=this.openModal.bind(this)
         this.closeModal=this.closeModal.bind(this)
@@ -34,7 +35,8 @@ export default class App extends React.Component{
     componentDidMount(){
         if (localStorage.getItem("loggedin")==='true'){
             this.setState({
-                loggedin:true
+                loggedin:true,
+                username:localStorage.getItem("username")
             })
         }
     }
@@ -51,8 +53,9 @@ export default class App extends React.Component{
         })
     }
 
-    loginSuccess(){
+    loginSuccess(username){
         this.setState({
+            username:username,
             loggedin:true
         })
     }
@@ -148,7 +151,7 @@ export default class App extends React.Component{
 
         return(
             <div>
-                <NavBar homeCallback={this.closeAbout} aboutCallback={this.openAbout} loggedin={this.state.loggedin} onNewnote={this.openModal} onLogout={this.logOut}></NavBar>
+                <NavBar userName={this.state.username} homeCallback={this.closeAbout} aboutCallback={this.openAbout} loggedin={this.state.loggedin} onNewnote={this.openModal} onLogout={this.logOut}></NavBar>
                 {mainscreen}
             </div>
         )

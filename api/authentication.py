@@ -30,20 +30,21 @@ class User_Login(Resource):
         user=dbms.get_user(data["username"])
 
         if(user!="autherror" and user!="error"):
-            if(user[1].encode()==bcrypt.hashpw(data["password"].encode(),user[1].encode())):
+            if(user[2].encode()==bcrypt.hashpw(data["password"].encode(),user[2].encode())):
                 PUBLIC_KEY=secrets.token_urlsafe(12)
                 encryptor=AES.new(PRIVATE_KEY,AES.MODE_CFB,PUBLIC_KEY)
                 enc_user=encryptor.encrypt(str(user[0]))
                 enc_user=base64.b64encode(enc_user).decode('utf-8')
                 token=jwt.encode({
-                    'uid': enc_user,
-                    'pub':PUBLIC_KEY,
-                    'iat':datetime.utcnow(),
-                    'exp': datetime.utcnow() + timedelta(minutes=30)},SECRET_KEY,algorithm="HS256")
+                    'uid':  enc_user,
+                    'pub':  PUBLIC_KEY,
+                    'iat':  datetime.utcnow(),
+                    'exp':  datetime.utcnow() + timedelta(minutes=30)},SECRET_KEY,algorithm="HS256")
 
                 token=token.decode('UTF-8')
                 token=jsonify({
                     "authstatus":"success",
+                    'username':  user[1],
                     "token":token
                 })
                 return token

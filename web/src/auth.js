@@ -21,7 +21,8 @@ class Auth{
                 localStorage.setItem("loggedin",'true')
                 res.json().then(res=>{
                     localStorage.setItem("token",res.token)
-                    successCallback()}
+                    localStorage.setItem("username",res.username)
+                    successCallback(res.username)}
                 )
             }
             else

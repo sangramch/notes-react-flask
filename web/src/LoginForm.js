@@ -56,7 +56,7 @@ export default class LoginForm extends React.Component{
         return(
             <Container>
                 <Form onSubmit={this.submitLoginInfo}>
-                    <Form.Control style={{"fontFamily":"monospace","marginTop":"10px"}} name="userid" placeholder="Email" value={this.state.userid} onChange={this.handleChange}></Form.Control>
+                    <Form.Control type="email" style={{"fontFamily":"monospace","marginTop":"10px"}} name="userid" placeholder="Email" value={this.state.userid} onChange={this.handleChange}></Form.Control>
                     <Form.Control style={{"fontFamily":"monospace","marginTop":"10px"}} type="password" name="password" placeholder="Password" value={this.state.password} onChange={this.handleChange}></Form.Control>
                     <Button style={{"fontFamily":"monospace","marginTop":"10px"}} type="submit">Login</Button>
                 </Form>

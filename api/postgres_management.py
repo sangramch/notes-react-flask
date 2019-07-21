@@ -89,8 +89,8 @@ def get_user(username):
         connection=ps.connect(user="sangram", host="localhost", port=5432, database="notesapp")
         cursor=connection.cursor()
 
-        query="""SELECT id,pass from users
-        WHERE email='{}';""".format(username,password)
+        query="""SELECT id,firstname,pass from users
+        WHERE email='{}';""".format(username)
 
         cursor.execute(query)
         user=cursor.fetchone()

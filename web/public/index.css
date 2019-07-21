@@ -69,3 +69,12 @@
 .innerdeletebtn #deletesvg{
     fill:white;
 }
+
+#gearsvgicon{
+    fill:rgba(255,255,255,0.5);
+    transition-duration:0.3s;
+}
+
+#gearsvgicon:hover{
+    fill:rgba(23, 224, 255, 0.9);
+}
